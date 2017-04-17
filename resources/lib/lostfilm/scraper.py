@@ -77,7 +77,7 @@ TorrentLink = namedtuple('TorrentLink', ['quality', 'url', 'size'])
 
 
 class LostFilmScraper(AbstractScraper):
-    BASE_URL = "http://www.lostfilm.tv"
+    BASE_URL = "http://old.lostfilm.tv"
     LOGIN_URL = "http://login1.bogi.ru/login.php"
     BLOCKED_MESSAGE = "Контент недоступен на территории Российской Федерации"
 
@@ -137,7 +137,7 @@ class LostFilmScraper(AbstractScraper):
             self.fetch(self.BASE_URL + '/browse.php')
             doc = self.fetch(
                 self.LOGIN_URL,
-                params={'referer': 'http://www.lostfilm.tv/'},
+                params={'referer': 'http://old.lostfilm.tv/'},
                 data={'login': self.login,
                       'password': self.password})
             action_url = doc.find('form').attr('action')
@@ -238,7 +238,7 @@ class LostFilmScraper(AbstractScraper):
                 release_date = ep.find('span', {'class':
                                                 'micro'}).find('span')[0].text
                 release_date = str_to_date(
-                    release_date, '%d.%m.%Y %H:%M') if release_date else None
+                    release_date, '%d.%m.%Y') if release_date else None
                 _, season_number, episode_number = parse_onclick(onclick)
                 poster = poster_url(original_title, season_number)
                 if not series_poster:
@@ -329,6 +329,7 @@ class LostFilmScraper(AbstractScraper):
             episode_titles, original_titles = zip(
                 * [parse_title(t) for t in titles])
             release_dates = body.find('b').strings[1::3]
+            self.log.info("release_date = %s" % release_dates)
             release_dates = [
                 str_to_date(d, '%d.%m.%Y %H:%M') for d in release_dates
             ]
